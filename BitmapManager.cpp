@@ -6,6 +6,7 @@ using namespace std;
 using namespace Microsoft::WRL;
 
 HRESULT BitmapManager::LoadWICBitmap(std::wstring filename, ID2D1Bitmap** ppBitmap) {
+	// WIC 디코더 및 포맷 컨버터 생성
 	Microsoft::WRL::ComPtr<IWICBitmapDecoder> decoder;
 	HRESULT hr;
 
@@ -14,6 +15,7 @@ HRESULT BitmapManager::LoadWICBitmap(std::wstring filename, ID2D1Bitmap** ppBitm
 		return E_FAIL;
 	}
 
+	// WIC 디코더를 생성하고 이미지 파일에서 비트맵을 로드
 	hr = pWICFactory->CreateDecoderFromFilename(
 		filename.c_str(), 
 		nullptr, 
@@ -37,6 +39,7 @@ HRESULT BitmapManager::LoadWICBitmap(std::wstring filename, ID2D1Bitmap** ppBitm
 		WICBitmapPaletteTypeCustom);
 	ThrowIfFailed(hr);
 
+	// 렌더 타겟에서 비트맵 생성
 	auto pRT = mpRenderTarget;
 	if (pRT == nullptr) {
 		return E_FAIL;

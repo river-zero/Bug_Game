@@ -30,15 +30,10 @@ public:
 
 	void ShowError(LPCWSTR msg, LPCWSTR title = L"Error");
 
-	static LRESULT CALLBACK WindowProc(
-		HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
-	);
+	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 public:
-	inline ID2D1HwndRenderTarget* GetRenderTarget() {
-		return mspRenderTarget.Get();
-	}
-	inline ID2D1Factory* GetD2DFactory() {
-		return mspD2DFactory.Get();
-	}
+	inline ID2D1HwndRenderTarget* GetRenderTarget() const { return mspRenderTarget.Get(); }
+	inline ID2D1Factory* GetD2DFactory() const { return mspD2DFactory.Get(); }
+	inline HWND GetHWND() const { return mHwnd; }
 };

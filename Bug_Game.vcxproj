@@ -21,14 +21,18 @@
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="BitmapManager.cpp" />
+    <ClCompile Include="Bug.cpp" />
     <ClCompile Include="D2DFramework.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="BitmapManager.h" />
+    <ClInclude Include="Bug.h" />
     <ClInclude Include="com_exception.h" />
     <ClInclude Include="D2DFramework.h" />
+    <ClInclude Include="GameManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

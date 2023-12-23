@@ -33,7 +33,7 @@ private:
 	Microsoft::WRL::ComPtr<IWICImagingFactory> mspWICFactory{};
 
 	std::map<std::wstring, Microsoft::WRL::ComPtr<ID2D1Bitmap>> mBitmapResources;
-	// 이미지를 관리하기 위해서 <파일명, 비트맵> 형태의 쌍이 필요
+	// 이미지를 관리하기 위한 <파일명, 비트맵> 형태의 맵
 
 private:
 	HRESULT LoadWICBitmap(std::wstring filename, ID2D1Bitmap** ppBitmap);
@@ -45,6 +45,5 @@ public:
 	void Release();
 
 	ID2D1Bitmap* LoadBitmap(std::wstring filename);
-	// 관리자의 핵심 함수
-	// 맵에 데이터의 존재를 확인하고 관리하는 기능
+	// 관리자의 핵심 함수로 맵에 데이터의 존재를 확인하고 관리
 };

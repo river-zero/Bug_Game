@@ -23,4 +23,8 @@ private:
 
 public:
 	virtual void Draw();
+
+	inline D2D_VECTOR_2F GetPosition() const { return { mX, mY }; }
+	inline void SetPosition(const D2D_VECTOR_2F& pos) { mX = pos.x; mY = pos.y; }
+	inline void SetPosition(float x, float y) { mX = x; mY = y; }
 };

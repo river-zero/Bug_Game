@@ -1,5 +1,5 @@
 #include <windows.h>
-#include "D2DFramework.h"
+#include "GameManager.h"
 
 int WINAPI WinMain(
     _In_ HINSTANCE hInstance,
@@ -8,8 +8,8 @@ int WINAPI WinMain(
     _In_ int nShowCmd) 
 {
     try {
-        D2DFramework myFramework;
-        myFramework.Initialize(hInstance, L"BugGame", 1024, 768);
+        GameManager myFramework;
+        myFramework.Initialize(hInstance);
         int ret = myFramework.GameLoop();
         myFramework.Release();
         return ret;
