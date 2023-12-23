@@ -15,16 +15,18 @@ Bug::Bug(D2DFramework* pFramework) : Actor(pFramework, L"Images/bug1.png") {
 	mX = distributionX(rand);
 	mY = distributionY(rand);
 
-	mRotation = 0.0f;
+	// 랜덤한 회전 각도로 초기화
+	std::uniform_real_distribution<float> distributionRotation(0.0f, 360.0f);
+	mRotation = distributionRotation(rand);
+
+	mMoveSpeed = 3.0f;
 	mSteps = 0.0f;
 	mIsDead = false;
 }
 
 void Bug::Draw() {
 	auto pRT = mpFramework->GetRenderTarget();
-	if (!pRT) {
-		return;
-	}
+	if (!pRT) { return; }
 
 	auto size = mpBitmap->GetPixelSize();
 
@@ -32,14 +34,21 @@ void Bug::Draw() {
 	if (mSteps++ > 30) {
 		mSteps = 0;
 
-		// 랜덤으로 회전 각도 설정
-		mRotation += (1 - rand() % 3) * 45.0f;
+		// 랜덤으로 목표 회전 각도 설정
+		mTargetRotation = (1 - rand() % 3) * 45.0f;
+	}
+
+	// 현재 회전 각도를 목표 회전 각도로 조금씩 변경
+	if (mRotation < mTargetRotation) {
+		mRotation += 1.0f;
+	} else if (mRotation > mTargetRotation) {
+		mRotation -= 1.0f;
 	}
 
 	// Bug를 현재 위치에서 이동 방향으로 이동
 	auto forward = UPVECTOR * D2D1::Matrix3x2F::Rotation(mRotation);
-	mX += forward.x;
-	mY += forward.y;
+	mX += forward.x * mMoveSpeed;
+	mY += forward.y * mMoveSpeed;
 
 	// Bug의 위치와 회전을 반영한 변환 행렬 설정
 	auto matTranslate = D2D1::Matrix3x2F::Translation(mX, mY);
@@ -50,7 +59,7 @@ void Bug::Draw() {
 	// 따라서 복잡한 그리기에는 주의가 필요
 
 	// Bug 이미지를 현재 위치와 행렬 변환에 따라 그리기
-	D2D1_RECT_F rect{ 0,0,static_cast<float>(size.width), static_cast<float>(size.height) };
+	D2D1_RECT_F rect{ 0, 0, static_cast<float>(size.width), static_cast<float>(size.height) };
 	mpFramework->GetRenderTarget()->DrawBitmap(mpBitmap, rect, mOpacity);
 }
 

@@ -12,6 +12,10 @@ private:
     float mRotation;
     float mSteps;
 
+    // 목표 회전 각도 및 이동 속도
+    float mTargetRotation;
+    float mMoveSpeed;
+
 public:
     // 벌레의 생존 여부 플래그
     bool mIsDead;
