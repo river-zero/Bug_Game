@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Bug.h"
 
 Bug::Bug(D2DFramework* pFramework) : Actor(pFramework, L"Images/bug1.png") {
@@ -49,6 +50,16 @@ void Bug::Draw() {
 	auto forward = UPVECTOR * D2D1::Matrix3x2F::Rotation(mRotation);
 	mX += forward.x * mMoveSpeed;
 	mY += forward.y * mMoveSpeed;
+
+	// 클라이언트 영역 내에서만 움직이도록 범위 제한
+	auto clientSize = pRT->GetSize();
+	mX = std::clamp(mX, 0.0f, clientSize.width - size.width);
+	mY = std::clamp(mY, 0.0f, clientSize.height - size.height);
+
+	// 만약 벌레가 클라이언트 영역의 끝에 도달했다면 180도 회전
+	if (mX <= 0.0f || mX >= clientSize.width - size.width || mY <= 0.0f || mY >= clientSize.height - size.height) {
+		mRotation += 180.0f;
+	}
 
 	// Bug의 위치와 회전을 반영한 변환 행렬 설정
 	auto matTranslate = D2D1::Matrix3x2F::Translation(mX, mY);
