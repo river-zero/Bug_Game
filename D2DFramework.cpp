@@ -1,6 +1,7 @@
 #include "D2DFramework.h"
 
 #pragma comment (lib, "d2d1.lib")
+#pragma comment (lib, "dwrite.lib")
 
 HRESULT D2DFramework::InitWindow(HINSTANCE hInstance, LPCWSTR title, UINT w, UINT h) {
     HWND hwnd;
@@ -50,6 +51,13 @@ HRESULT D2DFramework::InitD2D(HWND hwnd) {
         mspD2DFactory.GetAddressOf());
     ThrowIfFailed(hr);
 
+    hr = DWriteCreateFactory(
+        DWRITE_FACTORY_TYPE_SHARED,
+        __uuidof(mspWriteFactory),
+        reinterpret_cast<IUnknown**>(mspWriteFactory.GetAddressOf())
+    );
+    ThrowIfFailed(hr);
+
     hr = CreateDeviceResources();
 
     return hr;
@@ -83,9 +91,40 @@ HRESULT D2DFramework::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT w, UIN
     return S_OK;
 }
 
+void D2DFramework::PresentText(const WCHAR* text, FLOAT x, FLOAT y, FLOAT width, FLOAT height, const WCHAR* fontFamily, FLOAT fontSize, const D2D1_COLOR_F& textColor) {
+    if (mspRenderTarget) {
+        Microsoft::WRL::ComPtr<IDWriteTextFormat> textFormat;
+
+        mspWriteFactory->CreateTextFormat(
+            fontFamily,
+            NULL,
+            DWRITE_FONT_WEIGHT_NORMAL,
+            DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL,
+            fontSize,
+            L"",
+            &textFormat
+        );
+
+        Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> textBrush;
+        mspRenderTarget->CreateSolidColorBrush(textColor, &textBrush);
+
+        D2D1_RECT_F layoutRect = D2D1::RectF(x, y, x + width, y + height);
+        mspRenderTarget->DrawText(
+            text,
+            wcslen(text),
+            textFormat.Get(),
+            layoutRect,
+            textBrush.Get()
+        );
+    }
+}
+
 void D2DFramework::Release() {
     BitmapManager::Instance().Release();
 
+    mspTextBrush.Reset();
+    mspWriteFactory.Reset();
     mspRenderTarget.Reset();
     mspD2DFactory.Reset();
 

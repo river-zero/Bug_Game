@@ -21,6 +21,7 @@ Bug::Bug(D2DFramework* pFramework) : Actor(pFramework, L"Images/bug1.png") {
 	mRotation = distributionRotation(rand);
 
 	mMoveSpeed = 3.0f;
+	mTargetRotation = 0.0f;
 	mSteps = 0.0f;
 	mIsDead = false;
 }

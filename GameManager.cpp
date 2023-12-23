@@ -14,6 +14,8 @@ HRESULT GameManager::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT width, 
         mBugList.push_back(std::make_shared<Bug>(this));
     }
 
+    mGameStart = false;
+
     return S_OK;
 }
 
@@ -25,12 +27,27 @@ void GameManager::Render() {
     mspRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     mspRenderTarget->Clear(D2D1::ColorF(0.0f, 0.2f, 0.4f, 1.0f));
 
-    CheckBugs();
+    if (!mGameStart) {
+        // 배경 그리기
+        mspBackground->Draw();
 
-    // 배경과 벌레 이미지 그리기
-    mspBackground->Draw();
-    for (auto& bug : mBugList) {
-        bug->Draw();
+        // 게임 시작 전 문구 출력
+        PresentText(L"게임을 시작하세요", 350, 290, 800, 50, L"맑은고딕", 40);
+        PresentText(L"마우스 왼쪽 버튼 클릭", 410, 370, 800, 50, L"맑은고딕", 20);
+
+        // 왼쪽 마우스 버튼이 클릭되면 게임 시작
+        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+            mGameStart = true;
+        }
+    } else {
+        mspBackground->Draw();
+
+        CheckBugs();
+
+        // 벌레 이미지 그리기
+        for (auto& bug : mBugList) {
+            bug->Draw();
+        }
     }
 
     HRESULT hr = mspRenderTarget->EndDraw();
