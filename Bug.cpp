@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "Bug.h"
 
-Bug::Bug(D2DFramework* pFramework) : Actor(pFramework, L"Images/bug1.png") {
+Bug::Bug(D2DFramework* pFramework, LPCWSTR imagePath, float moveSpeed, bool isClickable) : Actor(pFramework, imagePath) {
 	// 난수 생성을 위한 시드 초기화
 	std::random_device rd;
 	std::mt19937 rand(rd());
@@ -20,7 +20,8 @@ Bug::Bug(D2DFramework* pFramework) : Actor(pFramework, L"Images/bug1.png") {
 	std::uniform_real_distribution<float> distributionRotation(0.0f, 360.0f);
 	mRotation = distributionRotation(rand);
 
-	mMoveSpeed = 3.0f;
+	mIsClickable = isClickable;
+	mMoveSpeed = moveSpeed;
 	mTargetRotation = 0.0f;
 	mSteps = 0.0f;
 	mIsDead = false;
@@ -79,7 +80,7 @@ bool Bug::IsClicked(POINT& pt) {
 	auto size = mpBitmap->GetPixelSize();
 
 	// Bug의 영역에 클릭이 발생하면 mIsDead를 true로 설정
-	if (pt.x >= mX && pt.y >= mY
+	if (mIsClickable && pt.x >= mX && pt.y >= mY
 		&& pt.x <= mX + size.width && pt.y <= mY + size.height) {
 		mIsDead = true;
 		return true;

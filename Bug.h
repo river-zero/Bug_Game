@@ -20,8 +20,11 @@ public:
     // 벌레의 생존 여부 플래그
     bool mIsDead;
 
+    // 클릭 가능 여부
+    bool mIsClickable;
+
 public:
-    Bug(D2DFramework* pFramework);
+    Bug(D2DFramework* pFramework, LPCWSTR imagePath, float moveSpeed, bool isClickable);
 
     virtual void Draw() override;
 

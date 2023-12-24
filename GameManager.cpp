@@ -11,10 +11,11 @@ HRESULT GameManager::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT width, 
 
     // Bug 클래스로부터 파생된 Bug 객체를 40개 생성하여 리스트에 추가
     for (int i = 0; i < 40; i++) {
-        mBugList.push_back(std::make_shared<Bug>(this));
+        mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug1.png", 2.5f, true));
     }
 
     mGameStart = false;
+    mBugGenerated = false;
 
     return S_OK;
 }
@@ -47,6 +48,20 @@ void GameManager::Render() {
         // 벌레 이미지 그리기
         for (auto& bug : mBugList) {
             bug->Draw();
+        }
+
+        if (mBugList.empty() && !mBugGenerated) {
+            PresentText(L"1단계 클리어", 400, 290, 800, 50, L"맑은고딕", 40);
+            PresentText(L"계속하려면 마우스 왼쪽 버튼 클릭", 370, 370, 800, 50, L"맑은고딕", 20);
+
+            Sleep(50);
+
+            if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+                for (int i = 0; i < 40; i++) {
+                    mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug2.png", 1.0f, false));
+                }
+                mBugGenerated = true;
+            }
         }
     }
 

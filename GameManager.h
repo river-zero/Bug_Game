@@ -13,6 +13,7 @@ private:
     // 원소들은 다양한 곳에서 사용하므로 shared_ptr로 지정
 
     bool mGameStart;
+    bool mBugGenerated;
 
 public:
     virtual HRESULT Initialize(HINSTANCE hInstance, LPCWSTR title = L"Bug Game", UINT width = 1024, UINT height = 768) override;
