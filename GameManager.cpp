@@ -10,12 +10,15 @@ HRESULT GameManager::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT width, 
     mspBackground = std::make_shared<Actor>(this, L"Images/background.jpg", 0.0f, 0.0f, 1.0f);
 
     // Bug 클래스로부터 파생된 Bug 객체를 40개 생성하여 리스트에 추가
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 40; i++) {
         mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug1.png", 2.5f, true));
     }
 
     mGameStart = false;
     mBugGenerated = false;
+    mGameSuccess = false;
+    mGameFail = false;
+    mGameStartTime = std::chrono::steady_clock::now();
 
     return S_OK;
 }
@@ -28,10 +31,10 @@ void GameManager::Render() {
     mspRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     mspRenderTarget->Clear(D2D1::ColorF(0.0f, 0.2f, 0.4f, 1.0f));
 
-    if (!mGameStart) {
-        // 배경 그리기
-        mspBackground->Draw();
+    // 배경 그리기
+    mspBackground->Draw();
 
+    if (!mGameStart) {
         // 게임 시작 전 문구 출력
         PresentText(L"게임을 시작하세요", 350, 290, 800, 50, L"맑은고딕", 40);
         PresentText(L"마우스 왼쪽 버튼 클릭", 410, 370, 800, 50, L"맑은고딕", 20);
@@ -40,9 +43,11 @@ void GameManager::Render() {
         if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
             mGameStart = true;
         }
+    } else if (mGameFail) {
+        PresentText(L"실패", 470, 320, 800, 50, L"맑은고딕", 40);
+    } else if (mGameSuccess) {
+        PresentText(L"성공", 470, 320, 800, 50, L"맑은고딕", 40);
     } else {
-        mspBackground->Draw();
-
         CheckBugs();
 
         // 벌레 이미지 그리기
@@ -61,6 +66,9 @@ void GameManager::Render() {
                     mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug2.png", 3.0f, false));
                 }
                 mBugGenerated = true;
+
+                // 2단계 시작 시간 저장
+                mGameStartTime = std::chrono::steady_clock::now();
             }
         }
     }
@@ -80,28 +88,47 @@ void GameManager::Release() {
 }
 
 void GameManager::CheckBugs() {
-    // 왼쪽 마우스가 클릭되었는지 확인
-    if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
-        // 현재 마우스 커서 위치 가져오기
-        POINT pt;
-        GetCursorPos(&pt);
-        ScreenToClient(mHwnd, &pt);
+    // 현재 마우스 커서 위치 가져오기
+    POINT pt;
+    GetCursorPos(&pt);
+    ScreenToClient(mHwnd, &pt);
 
-        // 벌레 리스트 순회 및 클릭된 벌레 확인
-        auto itr = std::remove_if(mBugList.begin(), mBugList.end(),
-            [&](auto& actor) {
-                // 클릭된 벌레를 체크하고 죽었다면 리스트에서 제거
-                Bug* p = static_cast<Bug*>(actor.get());
-                p->IsClicked(pt);
-                if (p->mIsDead) {
-                    return true;
-                } else {
-                    return false;
-                }
+    if (mBugGenerated) {
+        // 2단계가 시작되고 7초를 버텼다면 성공, 아니면 실패
+        for (auto& bug : mBugList) {
+            Bug* p = static_cast<Bug*>(bug.get());
+            p->IsClicked(pt);
+            if (p->mIsDead) {
+                mGameFail = true;
+                return;
             }
-        );
+        }
 
-        // 제거된 벌레 요소들을 벡터에서 실제로 삭제
-        mBugList.erase(itr, mBugList.end());
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - mGameStartTime).count();
+        if (elapsed >= 7) {
+            mGameSuccess = true;
+            return;
+        }
+    } else {
+        // 왼쪽 마우스가 클릭되었는지 확인
+        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+            // 벌레 리스트 순회 및 클릭된 벌레 확인
+            auto itr = std::remove_if(mBugList.begin(), mBugList.end(),
+                [&](auto& actor) {
+                    // 클릭된 벌레를 체크하고 죽었다면 리스트에서 제거
+                    Bug* p = static_cast<Bug*>(actor.get());
+                    p->IsClicked(pt);
+                    if (p->mIsDead) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            );
+
+            // 제거된 벌레 요소들을 벡터에서 실제로 삭제
+            mBugList.erase(itr, mBugList.end());
+        }
     }
 }

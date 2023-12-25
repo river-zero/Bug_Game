@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <list>
 #include "D2DFramework.h"
@@ -14,6 +15,9 @@ private:
 
     bool mGameStart;
     bool mBugGenerated;
+    bool mGameSuccess;
+    bool mGameFail;
+    std::chrono::steady_clock::time_point mGameStartTime;
 
 public:
     virtual HRESULT Initialize(HINSTANCE hInstance, LPCWSTR title = L"Bug Game", UINT width = 1024, UINT height = 768) override;

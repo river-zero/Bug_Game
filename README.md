@@ -1,5 +1,5 @@
 ## 벌레 게임
-게임은 총 두 가지 단계로 구성되어 있습니다. 1단계는 사방으로 돌아다니는 벌레들을 왼쪽 마우스로 클릭해 모두 제거하면 클리어됩니다. 2단계는 마우스에 부착된 사탕을 다가오는 벌레들로부터 10초 동안 지켜내면 클리어됩니다. 해당 프로젝트는 Direct2D를 이용해 구현하였습니다.
+게임은 총 두 가지 단계로 구성되어 있습니다. 1단계는 사방으로 돌아다니는 벌레들을 왼쪽 마우스로 클릭해 모두 제거하면 클리어됩니다. 2단계는 마우스를 향해 다가오는 벌레들로부터 10초 동안 지켜내면 클리어됩니다. 해당 프로젝트는 Direct2D를 이용해 구현하였습니다.
 
 ## 플레이 영상
 
@@ -18,15 +18,15 @@
 
 > 1단계를 클리어하고 나면 화면에 문구가 출력이 되고, 마우스 왼쪽 버튼을 누르면 2단계로 넘어가도록 하고자 하였습니다. 그런데, 두 번째 벌레 이미지가 생성되는 것은 잘 작동하였으나 마우스 왼쪽 버튼을 누루는 순간 거의 동시에 문구 출력과 벌레 이미지 생성이 이루어져 문구 출력 텍스트가 보이지 않는 문제가 발생했습니다. 이를 해결하기 위해 mBugGenerated 멤버 변수를 추가하였고, 문구 출력 부분과 벌레 이미지 생성 부분 사이에 Sleep(50); 코드를 추가해 간단하게 해결하였습니다.
 
+> 2단계가 시작되고 나서 7초를 버티면 성공, 버티지 못하고 벌레와 마우스가 닿으면 실패 문구를 출력하도록 구현하고자 하였습니다. 7초를 버티면 성공 문구를 출력하는 것까지 완성시켰으나 어째서인지 마우스와 벌레가 서로 닿아도 실패 문구로 전환되지 않는 문제가 발생했습니다. 왜 이런 문제가 발생하는 것인지 코드를 자세히 살펴보았고, Bug 클래스 내 IsClicked 함수에서 Bug의 영역에 클릭이 발생하면 mIsDead를 true로 설정하는 부분에서 if문 조건 중 mIsClickable이 참인 경우에만 mIsDead를 변경 가능한 것을 발견했습니다. mIsClickable 조건이 없어도 제대로 작동함을 확인하였고, 성공/실패 화면 또한 조건에 맞게 그려지는 것을 확인해 해결하였습니다.
+
 ## 리소스 목록
 |      이름      |   설명    |
 | :------------: | :-------: |
 | background.jpg |   배경    |
 |    bug1.png    | 빨간 벌레 |
 |    bug2.png    | 노란 벌레 |
-|   candy.png    |   사탕    |
 
 ## 출처
 - https://www.freepik.com/free-vector/hand-drawn-colorful-bug-collection_4176860.htm#query=bug&position=5&from_view=search&track=sph
 - https://www.freepik.com/free-photo/design-space-paper-textured-background_3220799.htm#from_view=detail_author
-- https://www.freepik.com/free-vector/set-delicious-candies-flat-style_2286190.htm#query=candy&position=8&from_view=search&track=sph&uuid=b1683c40-7980-4602-ace0-6b92f3fe264b

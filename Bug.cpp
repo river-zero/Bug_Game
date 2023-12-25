@@ -109,7 +109,7 @@ bool Bug::IsClicked(POINT& pt) {
 	auto size = mpBitmap->GetPixelSize();
 
 	// Bug의 영역에 클릭이 발생하면 mIsDead를 true로 설정
-	if (mIsClickable && pt.x >= mX && pt.y >= mY
+	if (pt.x >= mX && pt.y >= mY
 		&& pt.x <= mX + size.width && pt.y <= mY + size.height) {
 		mIsDead = true;
 		return true;
