@@ -10,7 +10,7 @@ HRESULT GameManager::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT width, 
     mspBackground = std::make_shared<Actor>(this, L"Images/background.jpg", 0.0f, 0.0f, 1.0f);
 
     // Bug 클래스로부터 파생된 Bug 객체를 40개 생성하여 리스트에 추가
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 1; i++) {
         mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug1.png", 2.5f, true));
     }
 
@@ -58,7 +58,7 @@ void GameManager::Render() {
 
             if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
                 for (int i = 0; i < 40; i++) {
-                    mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug2.png", 1.0f, false));
+                    mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug2.png", 3.0f, false));
                 }
                 mBugGenerated = true;
             }

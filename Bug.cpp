@@ -41,17 +41,46 @@ void Bug::Draw() {
 		mTargetRotation = (1 - rand() % 3) * 45.0f;
 	}
 
-	// 현재 회전 각도를 목표 회전 각도로 조금씩 변경
-	if (mRotation < mTargetRotation) {
-		mRotation += 1.0f;
-	} else if (mRotation > mTargetRotation) {
-		mRotation -= 1.0f;
-	}
+	if (mIsClickable) {
+		// Bug를 현재 위치에서 이동 방향으로 이동
+		auto forward = UPVECTOR * D2D1::Matrix3x2F::Rotation(mRotation);
+		mX += forward.x * mMoveSpeed;
+		mY += forward.y * mMoveSpeed;
 
-	// Bug를 현재 위치에서 이동 방향으로 이동
-	auto forward = UPVECTOR * D2D1::Matrix3x2F::Rotation(mRotation);
-	mX += forward.x * mMoveSpeed;
-	mY += forward.y * mMoveSpeed;
+		// 현재 회전 각도를 목표 회전 각도로 조금씩 변경
+		if (mRotation < mTargetRotation) {
+			mRotation += 1.0f;
+		} else if (mRotation > mTargetRotation) {
+			mRotation -= 1.0f;
+		}
+	} else {
+		// 현재 마우스 위치를 얻음
+		POINT pt;
+		GetCursorPos(&pt);
+		ScreenToClient(mpFramework->GetHWND(), &pt);
+
+		// 벌레와 마우스 사이의 벡터를 계산
+		D2D_VECTOR_2F direction = { pt.x - mX, pt.y - mY };
+
+		// 벡터를 정규화
+		float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+		direction.x /= length;
+		direction.y /= length;
+
+		// 벌레를 마우스의 방향으로 이동
+		mX += direction.x * mMoveSpeed;
+		mY += direction.y * mMoveSpeed;
+
+		// 마우스를 향한 각도를 계산
+		float targetRotation = atan2(direction.y, direction.x) * 180.0f / 3.14159265f;
+
+		// 현재 회전 각도를 목표 회전 각도로 조금씩 변경
+		if (mRotation < targetRotation) {
+			mRotation += 1.0f;
+		} else if (mRotation > targetRotation) {
+			mRotation -= 1.0f;
+		}
+	}
 
 	// 클라이언트 영역 내에서만 움직이도록 범위 제한
 	auto clientSize = pRT->GetSize();
