@@ -4,7 +4,7 @@
 ## 플레이 영상
 
 ## 클래스 설계도
-![클래스 설계도](out\Bug_Game\Bug_Game.png)
+![클래스 설계도](/out/Bug_Game/Bug_Game.png)
 
 ## 주요 기능
 - 벌레 랜덤 생성 및 움직임 구현
