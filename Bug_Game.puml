@@ -1,0 +1,90 @@
+@startuml
+
+!define RECTANGLE class
+
+RECTANGLE D2DFramework {
+    - gClassName: const LPCWSTR gClassName
+    # mHwnd: HWND
+    # mspD2DFactory: Microsoft::WRL::ComPtr<ID2D1Factory>
+    # mspRenderTarget: Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget>
+    # mspWriteFactory: Microsoft::WRL::ComPtr<IDWriteFactory>
+    # mspTextBrush: Microsoft::WRL::ComPtr<ID2D1SolidColorBrush>
+
+    # InitWindow(hInstance: HINSTANCE, title: LPCWSTR, w: UINT, h: UINT): HRESULT
+    # InitD2D(hwnd: HWND): HRESULT
+    # CreateDeviceResources(): HRESULT
+    + Initialize(hInstance: HINSTANCE, title: LPCWSTR, w: UINT, h: UINT): HRESULT
+    + PresentText(text: const WCHAR*, x: FLOAT, y: FLOAT, width: FLOAT, height: FLOAT, fontFamily: const WCHAR*, fontSize: FLOAT, textColor: const D2D1_COLOR_F&): void
+    + Release(): void
+    + GameLoop(): int
+    + Render(): void
+    + ShowError(msg: LPCWSTR, title: LPCWSTR): void
+    + GetRenderTarget(): ID2D1HwndRenderTarget*
+    + GetD2DFactory(): ID2D1Factory*
+    + GetHWND(): HWND
+    {static} + WindowProc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT
+}
+
+RECTANGLE BitmapManager {
+    - mpRenderTarget: ID2D1HwndRenderTarget*
+    - mspWICFactory: Microsoft::WRL::ComPtr<IWICImagingFactory>
+    - mBitmapResources: std::map<std::wstring, Microsoft::WRL::ComPtr<ID2D1Bitmap>>
+
+    {static} + Instance(): BitmapManager&
+    - LoadWICBitmap(filename: std::wstring, ppBitmap: ID2D1Bitmap**): HRESULT
+    + Initialize(pRT: ID2D1HwndRenderTarget*): HRESULT
+    + Release(): void
+    + LoadBitmap(filename: std::wstring): ID2D1Bitmap*
+}
+
+RECTANGLE Actor {
+    # mpFramework: D2DFramework*
+    # mpBitmap: ID2D1Bitmap*
+    # mX: float
+    # mY: float
+    # mOpacity: float
+
+    - Draw(x: float, t: float, opacity: float): void
+    + Draw(): void
+    + GetPosition(): D2D_VECTOR_2F
+    + SetPosition(pos: D2D_VECTOR_2F): void
+    + SetPosition(x: float, y: float): void
+}
+
+RECTANGLE Bug {
+    - UPVECTOR: const D2D_POINT_2F
+    - mRotation: float
+    - mSteps: float
+    - mTargetRotation: float
+    - mMoveSpeed: float
+    + mIsDead: bool
+    + mIsClickable: bool
+
+    + Draw(): void
+    + IsClicked(pt: POINT&): bool
+}
+
+RECTANGLE GameManager {
+    - mspBackground: std::shared_ptr<Actor>
+    - mBugList: std::list<std::shared_ptr<Actor>>
+    - mGameStart: bool
+    - mBugGenerated: bool
+    - mGameSuccess: bool
+    - mGameFail: bool
+    - mGameStartTime: std::chrono::steady_clock::time_point
+
+    + Initialize(hInstance: HINSTANCE, title: LPCWSTR, width: UINT, height: UINT): HRESULT
+    + Render(): void
+    + Release(): void
+    + CheckBugs(): void
+    + ResetGame(): void
+}
+
+D2DFramework --|> GameManager
+Actor --|> Bug
+D2DFramework o--> BitmapManager
+Actor o--> BitmapManager
+GameManager o--> Actor
+D2DFramework <--o Actor
+
+@enduml

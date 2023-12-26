@@ -25,4 +25,5 @@ public:
     virtual void Release() override;
 
     void CheckBugs();
+    void ResetGame();
 };

@@ -10,14 +10,14 @@ HRESULT GameManager::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT width, 
     mspBackground = std::make_shared<Actor>(this, L"Images/background.jpg", 0.0f, 0.0f, 1.0f);
 
     // Bug 클래스로부터 파생된 Bug 객체를 40개 생성하여 리스트에 추가
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 15; i++) {
         mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug1.png", 2.5f, true));
     }
 
     mGameStart = false;
-    mBugGenerated = false;
-    mGameSuccess = false;
     mGameFail = false;
+    mGameSuccess = false;
+    mBugGenerated = false;
     mGameStartTime = std::chrono::steady_clock::now();
 
     return S_OK;
@@ -45,8 +45,18 @@ void GameManager::Render() {
         }
     } else if (mGameFail) {
         PresentText(L"실패", 470, 320, 800, 50, L"맑은고딕", 40);
+
+        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+            ResetGame();
+            Render();
+        }
     } else if (mGameSuccess) {
         PresentText(L"성공", 470, 320, 800, 50, L"맑은고딕", 40);
+
+        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+            ResetGame();
+            Render();
+        }
     } else {
         CheckBugs();
 
@@ -59,10 +69,29 @@ void GameManager::Render() {
             PresentText(L"1단계 클리어", 400, 290, 800, 50, L"맑은고딕", 40);
             PresentText(L"계속하려면 마우스 왼쪽 버튼 클릭", 370, 370, 800, 50, L"맑은고딕", 20);
 
-            Sleep(50);
+            Sleep(70);
 
             if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
-                for (int i = 0; i < 40; i++) {
+                // 벌레 생성 전 마음의 준비할 시간
+                mspBackground->Draw();
+                PresentText(L"3", 500, 320, 800, 50, L"맑은고딕", 40);
+                mspRenderTarget->EndDraw();
+                Sleep(1000);
+                mspRenderTarget->BeginDraw();
+
+                mspBackground->Draw();
+                PresentText(L"2", 500, 320, 800, 50, L"맑은고딕", 40);
+                mspRenderTarget->EndDraw();
+                Sleep(1000);
+                mspRenderTarget->BeginDraw();
+
+                mspBackground->Draw();
+                PresentText(L"1", 500, 320, 800, 50, L"맑은고딕", 40);
+                mspRenderTarget->EndDraw();
+                Sleep(1000);
+                mspRenderTarget->BeginDraw();
+
+                for (int i = 0; i < 15; i++) {
                     mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug2.png", 3.0f, false));
                 }
                 mBugGenerated = true;
@@ -130,5 +159,18 @@ void GameManager::CheckBugs() {
             // 제거된 벌레 요소들을 벡터에서 실제로 삭제
             mBugList.erase(itr, mBugList.end());
         }
+    }
+}
+
+void GameManager::ResetGame() {
+    mGameStart = false;
+    mGameFail = false;
+    mGameSuccess = false;
+    mBugGenerated = false;
+    mGameStartTime = std::chrono::steady_clock::now();
+    mBugList.clear();
+
+    for (int i = 0; i < 15; i++) {
+        mBugList.push_back(std::make_shared<Bug>(this, L"Images/bug1.png", 2.5f, true));
     }
 }

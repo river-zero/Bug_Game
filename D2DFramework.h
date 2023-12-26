@@ -13,7 +13,6 @@ private:
 protected:
 	HWND mHwnd{};
 
-protected:
 	Microsoft::WRL::ComPtr<ID2D1Factory> mspD2DFactory{};
 	Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> mspRenderTarget{};
 
